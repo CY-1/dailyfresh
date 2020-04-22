@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'order',
     'user',
     'goods',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,7 @@ DATABASES = {
         'NAME': 'dailyfresh',
         'USER': "root",
         'PASSWORD': "123456",
-        "HOST": "localhost",
+        "HOST": "192.168.80.132",
         "PORT": 3306,
     }
 }
@@ -129,3 +130,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}
+# django 认证系统使用的模型类
+AUTH_USER_MODEL = 'user.User'

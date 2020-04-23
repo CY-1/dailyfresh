@@ -1,2 +1,2 @@
 # dailyfresh
-B2B by Django3.0。5
+B2B by Django3.0.5

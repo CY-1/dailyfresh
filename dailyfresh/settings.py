@@ -137,3 +137,16 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 # django 认证系统使用的模型类
 AUTH_USER_MODEL = 'user.User'
+
+# 发送邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# smtp服务器地址
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = '25'
+# 发送邮件的邮箱
+EMAIL_HOST_USER = "githubcy700@163.com"
+# 授权密码
+EMAIL_HOST_PASSWORD = 'BXKZXRWFRYSSTYGN'
+# 收件人看到的发件人
+EMAIL_FROM = 'DailyFresh<githubcy700@163.com>'
+

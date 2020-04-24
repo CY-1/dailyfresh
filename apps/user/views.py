@@ -80,10 +80,12 @@ class RegisterView(View):
         token = serializer.dumps(info)
         # 发送邮件
         subject = '天天生鲜欢迎信息'
-        messge = '邮件正文'
+        message = ""
         sender = settings.EMAIL_FROM
         receiver = [email]
-        send_mail(subject, messge, sender, recipient_list=receiver)
+        html_message =r'<a href="http://127.0.0.1:8000/user/active/%s/"> http://127.0.0.1:8000/user/active/%s/ </a>' % \
+                  (token.decode('utf-8'), token.decode('utf-8'))
+        send_mail(subject, message=message, from_email=sender, recipient_list=receiver, html_message=html_message)
         # 返回处理
         return redirect(reverse('goods:index'))
 
@@ -110,8 +112,8 @@ class ActiveView(View):
             return HttpResponse("过期了")
 
 
-    class LoginView(View):
-        '''登录'''
+class LoginView(View):
+    '''登录'''
 
-        def get(self, request):
-            return render(request, 'login.html')
+    def get(self, request):
+        return render(request, 'login.html')

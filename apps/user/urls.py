@@ -8,6 +8,6 @@ from django.conf.urls import  url
 app_name = 'user'
 urlpatterns = [
    url(r"^register/$", RegisterView.as_view()),
-   url(r"^active/$", LoginView.as_view(), name="login"),
+   url(r"^login/$", LoginView.as_view(), name="login"),
    url(r"^active/(?P<token>.*)/$", ActiveView.as_view())
 ]

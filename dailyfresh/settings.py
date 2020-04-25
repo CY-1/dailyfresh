@@ -150,3 +150,17 @@ EMAIL_HOST_PASSWORD = 'BXKZXRWFRYSSTYGN'
 # 收件人看到的发件人
 EMAIL_FROM = 'DailyFresh<githubcy700@163.com>'
 
+
+# redis缓存设置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://192.168.80.132/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+# 配置session存储方式
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"

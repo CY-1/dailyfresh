@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.urls import reverse
 import re
 from django.http import HttpResponse
@@ -111,4 +112,39 @@ class LoginView(View):
     '''登录'''
 
     def get(self, request):
-        return render(request, 'login.html')
+        if 'username' in request.COOKIES:
+            username = request.COOKIES.get("username")
+            checked = "checked"
+        else:
+            username = ""
+            checked = ""
+        return render(request, 'login.html', {"username": username, "checked": checked})
+
+    def post(self,request):
+        '''登录效验'''
+        # 接受数据
+        username = request.POST.get('username')
+        password = request.POST.get("pwd")
+        # 效验数据
+        if not all([username, password]):
+            return render(request, 'login.html', {"errmsg":"不完整"})
+        # 业务处理 用的是自带的认证系统
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                # 记录用户登录状态 用自带的用户系统
+                login(request, user)
+                response = redirect(reverse("goods:index"))
+                # 判断是否记住用户名
+                remember = request.POST.get("remember")
+                if remember=="on":
+                    # 是否记住用户名
+                    response.set_cookie("username", username, max_age=7*24*3600)
+                else:
+                    response.delete_cookie("username")
+                # 跳转到首页
+                return response
+            else:
+                return render(request, 'login.html', {"errmsg": "用户没激活"})
+        else:
+            return render(request, 'login.html', {"errmsg": "用户名或密码不正确"})

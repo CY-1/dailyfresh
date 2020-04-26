@@ -1,16 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+{% extends 'base.html' %}
 {% load static %}
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<title>天天生鲜-注册</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+{% block title %}天天生鲜注册{% endblock %}
+
+	{% block topfiles %}
+        <script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/register.js' %}"></script>
+{% endblock topfiles %}
 </head>
-<body>
-	<div class="register_con">
+{% block header_con %}{% endblock header_con %}
+{% block search_bar %}{% endblock search_bar %}
+	{% block body %}
+        <div class="register_con">
 		<div class="l_con fl">
 			<a class="reg_logo"><img src="{% static 'images/logo02.png' %}"></a>
 			<div class="reg_slogan">足不出户  ·  新鲜每一天</div>
@@ -30,7 +30,7 @@
 						<label>用户名:</label>
 						<input type="text" name="user_name" id="user_name">
 						<span class="error_tip">提示信息</span>
-					</li>					
+					</li>
 					<li>
 						<label>密码:</label>
 						<input type="password" name="pwd" id="pwd">
@@ -54,7 +54,7 @@
 					<li class="reg_sub">
 						<input type="submit" value="注 册" name="">
 					</li>
-				</ul>				
+				</ul>
 				</form>
                 {{ errmsg }}
 			</div>
@@ -62,20 +62,5 @@
 		</div>
 
 	</div>
+{% endblock body%}
 
-	<div class="footer no-mp">
-		<div class="foot_link">
-			<a href="#">关于我们</a>
-			<span>|</span>
-			<a href="#">联系我们</a>
-			<span>|</span>
-			<a href="#">招聘人才</a>
-			<span>|</span>
-			<a href="#">友情链接</a>		
-		</div>
-		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
-		<p>电话：010-****888    京ICP备*******8号</p>
-	</div>
-	
-</body>
-</html>

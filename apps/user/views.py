@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import re
 from django.http import HttpResponse
-from user.models import User
+from user.models import User, Address
 from django.conf import  settings
 from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
 from celery_tasks.tasks import  send_register_active_email
+from utils.mixin import LoginRequireMixin
 from django.core.mail import send_mail
 # Create your views here.
 
@@ -120,7 +121,7 @@ class LoginView(View):
             checked = ""
         return render(request, 'login.html', {"username": username, "checked": checked})
 
-    def post(self,request):
+    def post(self, request):
         '''登录效验'''
         # 接受数据
         username = request.POST.get('username')
@@ -130,11 +131,15 @@ class LoginView(View):
             return render(request, 'login.html', {"errmsg":"不完整"})
         # 业务处理 用的是自带的认证系统
         user = authenticate(username=username, password=password)
+
+        # 获取登录后要跳转的地址 如果能获取到返回值就获取 获取不到就获取reverse的值
+        # 获取不到就是None
+        next_url = request.GET.get('next', reverse('goods:index'))
         if user is not None:
             if user.is_active:
                 # 记录用户登录状态 用自带的用户系统
                 login(request, user)
-                response = redirect(reverse("goods:index"))
+                response = redirect(next_url)
                 # 判断是否记住用户名
                 remember = request.POST.get("remember")
                 if remember=="on":
@@ -149,24 +154,79 @@ class LoginView(View):
         else:
             return render(request, 'login.html', {"errmsg": "用户名或密码不正确"})
 
+# /user/logout
+class LogoutView(View):
+    '''退出登录'''
+    def get(self, request):
+        '''退出登录'''
+        # 使用的内置认证系统 也要使用内置的退出
+        # 清楚用户的session
+        logout(request)
+        return redirect(reverse("goods:index"))
 # /user
-class UserInfoView(View):
+class UserInfoView(LoginRequireMixin, View):
     '''用户中心 信息页'''
 
     def get(self, request):
-        return render(request, 'user_center_info.html', {"page": "user"})
+        # 获取用户的个人信息
+        address = Address.objects.get_default_address(request.user)
+
+        # 获取用户的历史游览记录
+        #
+        return render(request, 'user_center_info.html', {"page": "user","address": address})
 
 # /user/order
-class UserOrderView(View):
+class UserOrderView(LoginRequireMixin, View):
     '''用户中心 订单页'''
 
     def get(self, request):
+        # 获取用户的订单信息
         return render(request, 'user_center_order.html', {"page": "order"})
 
 
 # /user/address
-class UserAddressView(View):
+class UserAddressView(LoginRequireMixin, View):
     '''用户中心 地址'''
-
+    # TODO 以后修改到能选择默认地址
     def get(self, request):
-        return render(request, 'user_center_site.html', {"page": "address"})
+        # 获取用户的默认地址信息
+        #
+        user = request.user
+
+        address = Address.objects.get_default_address(user)
+
+        return render(request, 'user_center_site.html', {"page": "address", "address": address})
+    def post(self, request):
+        """地址的添加"""
+        # 接受数据
+        receiver = request.POST.get('receiver')
+        addr = request.POST.get("addr")
+        zip_code = request.POST.get("zip_code")
+        phone = request.POST.get("phone")
+
+        # 效验数据
+        if not all([receiver, addr, phone]):
+            return render(request, "user_center_site.html", {"errmsg": "数据不完整"})
+        if not re.match(r"^^[1][3,4,5,7,8][0-9]{9}$", phone):
+            return render(request, "user_center_site.html", {"errmsg": "手机格式不正确"})
+        # 业务处理
+        # 如果用户已经默认收货地址 添加的的地址不作为默认收货地址 否则就是默认收货地址
+        # 获取登录用户
+        user = request.user
+
+        address = Address.objects.get_default_address(user)
+
+        if address:
+            is_default = False
+        else:
+            is_default = True
+        # 添加地址
+        Address.objects.create(user=user,
+                               receiver=receiver,
+                               addr=addr,
+                               zip_code=zip_code,
+                               phone=phone,
+                               is_default=is_default,
+                               )
+        # 应答 刷新地址页面
+        return redirect(reverse("user:address"))

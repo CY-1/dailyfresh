@@ -164,3 +164,5 @@ CACHES = {
 # 配置session存储方式
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+# 未登录跳转到指定的地址
+LOGIN_URL = '/user/login/'

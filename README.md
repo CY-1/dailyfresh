@@ -10,4 +10,5 @@ B2B by Django3.0.5
 - ### 用户登录
     - 使用自带的user认证系统
     - redis作为session缓存
+    - 在需要判断登录的视图用Mixin方法,以此检测是否登录
 

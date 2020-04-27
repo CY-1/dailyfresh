@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import re
+from goods.models import GoodsSKU
 from django.http import HttpResponse
 from user.models import User, Address
 from django.conf import  settings
@@ -9,6 +10,7 @@ from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
 from celery_tasks.tasks import  send_register_active_email
 from utils.mixin import LoginRequireMixin
+from django_redis import get_redis_connection
 from django.core.mail import send_mail
 # Create your views here.
 
@@ -154,6 +156,7 @@ class LoginView(View):
         else:
             return render(request, 'login.html', {"errmsg": "用户名或密码不正确"})
 
+
 # /user/logout
 class LogoutView(View):
     '''退出登录'''
@@ -163,6 +166,8 @@ class LogoutView(View):
         # 清楚用户的session
         logout(request)
         return redirect(reverse("goods:index"))
+
+
 # /user
 class UserInfoView(LoginRequireMixin, View):
     '''用户中心 信息页'''
@@ -170,10 +175,25 @@ class UserInfoView(LoginRequireMixin, View):
     def get(self, request):
         # 获取用户的个人信息
         address = Address.objects.get_default_address(request.user)
-
+        user = request.user
         # 获取用户的历史游览记录
-        #
-        return render(request, 'user_center_info.html', {"page": "user","address": address})
+        # from redis import StrictRedis
+        # sr = StrictRedis(host="192.168.80.132", port=6379, db=9)
+        con = get_redis_connection("default")
+        history_key = "history_%d"%user.id
+        # 获取用户最新游览的5个商品的id
+        sku_ids = con.lrange(history_key, 0, 4)
+        # 从数据库中查询用户游览商品的具体信息
+        goods_li = []
+        for id in sku_ids:
+            goods = GoodsSKU.objects.get(id=id)
+            goods_li.append(goods)
+        # 组织上下文
+        context = {"page": "user",
+                   "address": address,
+                   "goods_li": goods_li}
+        return render(request, 'user_center_info.html',context )
+
 
 # /user/order
 class UserOrderView(LoginRequireMixin, View):
@@ -230,3 +250,5 @@ class UserAddressView(LoginRequireMixin, View):
                                )
         # 应答 刷新地址页面
         return redirect(reverse("user:address"))
+
+

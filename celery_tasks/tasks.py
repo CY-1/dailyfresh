@@ -25,3 +25,7 @@ def send_register_active_email(to_email, username, token):
     html_message = r'<a href="http://127.0.0.1:8000/user/active/%s/"> http://127.0.0.1:8000/user/active/%s/ </a>' % \
                    (token, token)
     send_mail(subject, message=message, from_email=sender, recipient_list=receiver, html_message=html_message)
+
+
+def generate_static_index_html():
+    '''产生首页静态页面'''

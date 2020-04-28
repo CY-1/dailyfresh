@@ -115,6 +115,8 @@ class LoginView(View):
     '''登录'''
 
     def get(self, request):
+        if request.user.is_authenticated:# 防止用户重复登录
+             return redirect(reverse('goods:index'))
         if 'username' in request.COOKIES:
             username = request.COOKIES.get("username")
             checked = "checked"

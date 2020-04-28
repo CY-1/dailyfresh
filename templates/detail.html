@@ -14,7 +14,7 @@
 		<div class="goods_detail_pic fl"><img src="{{ sku.image.url }}"></div>
 
 		<div class="goods_detail_list fr">
-			<h3>大兴大棚草莓</h3>
+			<h3>{{ sku.name }}</h3>
 			<p>{{ sku.desc }}</p>
 			<div class="prize_bar">
 				<span class="show_pirze">¥<em>{{ sku.price }}</em></span>
@@ -28,6 +28,14 @@
 					<a href="javascript:;" class="minus fr">-</a>	
 				</div> 
 			</div>
+            <div>
+                <p>其他规格:</p>
+            <ul>
+                {% for sku in same_spu_skus %}
+                    <li><a href="{% url 'goods:detail' sku.id %}" class="else_sku">{{ sku.name }}</a></li>
+                {% endfor %}
+            </ul>
+            </div>
 			<div class="total">总价：<em>16.80元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
@@ -45,7 +53,7 @@
 					<li>
                     {% comment %} 那个sku.id 是传递值{% endcomment %}
 						<a href="{% url "goods:detail" sku.id %}"><img src="{{sku.image.url}}"></a>
-						<h4><a href="#">{{ sku.name }}</a></h4>
+						<h4><a href="#" >{{ sku.name }}</a></h4>
 						<div class="prize">{{ sku.price }}</div>
 					</li>
                     {% endfor %}
@@ -92,7 +100,7 @@
 
 		var $to_x = $('#show_count').offset().top;
 		var $to_y = $('#show_count').offset().left;
-
+        $('.else_sku').css({'color':'red'});
 		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
 		$('#add_cart').click(function(){
 			$(".add_jump").stop().animate({

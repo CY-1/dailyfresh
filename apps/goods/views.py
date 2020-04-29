@@ -154,4 +154,4 @@ class ListView(View):
             'pages': pages,
             "new_skus": new_skus,
         }
-        return render(request, 'list.html', context)
+        return render(request, 'search/indexes/list.html', context)

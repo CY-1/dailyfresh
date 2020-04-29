@@ -15,5 +15,6 @@ B2B by Django3.0.5
     - redis作为储存历史游览记录   
     - 可以上传多个地址 设置默认地址待补充
 - ### 搜索
-    - 为了兼容修改 把six模块 复制到了django.utils里面
+    - 采用haystack框架 jieba分词
+    - 为了兼容新版本Django模块 安装six模块 复制到了django.utils里面
 

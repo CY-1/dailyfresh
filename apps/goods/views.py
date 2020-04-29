@@ -3,6 +3,7 @@ from django.views.generic import View
 from goods.models import GoodsType, IndexGoodsBanner, IndexPromotionBanner, IndexTypeGoodsBanner, GoodsSKU
 from django_redis import get_redis_connection
 from order.models import OrderGoods
+from django.core.paginator import  Paginator
 # Create your views here.
 
 
@@ -86,3 +87,71 @@ class DetailView(View):
             'same_spu_skus': same_spu_skus,
         }
         return render(request, 'detail.html', context)
+
+# 需要传递种类id 页码 排序方式
+# /list/种类id/页码?sort=排序方式
+class ListView(View):
+    '''列表页'''
+    def get(self, request, type_id, page):
+        '''显示列表页'''
+        # 先获取种类信息
+        try:
+            type = GoodsType.objects.get(id=type_id)
+        except GoodsType.DoesNotExist:
+            # 种类不存在
+            return redirect(reverse("goods:index"))
+        # 获取排序的方式
+        sort = request.GET.get('sort')
+        print(sort)
+        # 获取商品的分类信息
+        types = GoodsType.objects.all()
+        if sort=='price':
+            skus = GoodsSKU.objects.filter(type=type).order_by("price")
+        elif sort=='hot':
+            skus = GoodsSKU.objects.filter(type=type).order_by("-sales")
+        else:
+            skus = GoodsSKU.objects.filter(type=type).order_by('-id')
+            sort = 'default'
+        paginator = Paginator(skus, 1)
+        page = int(page)
+        if page>paginator.num_pages:
+            page = 1
+        skus_page = paginator.page(page)
+        # 获取page页的内容
+        # 1 总页数小于五页 页面上显示所有页码
+        # 2 如果当前页是前三页 显示前五页的页码
+        # 3 如果当前页是后三页 显示后五页的页码
+        # 4 其他情况 显示当前页,当前页的前两页和后两页
+        num_pages = paginator.num_pages
+        if num_pages < 5:
+            pages = range(1, num_pages+1)
+        elif page <= 3:
+            pages = range(1, 6)
+        elif num_pages-page <= 2:
+            pages = range(num_pages-4, num_pages+1)
+        else:
+            pages = range(page-2, page+3)
+        try:
+            page = int(page)
+        except Exception as e:
+            page = 1
+        # 新品推荐
+        new_skus = GoodsSKU.objects.filter(type=type).order_by('-create_time')[:2]
+        # 购物车数目
+        user = request.user
+        cart_count = 0
+        if user.is_authenticated:
+            conn = get_redis_connection('default')
+            cart_key = "cart_%d"% user.id
+            cart_count = conn.hlen(cart_key)
+        context = {
+            'skus': skus,
+            'type':type,
+            'skus_page': skus_page,
+            'cart_count': cart_count,
+            'sort': sort,
+            'types':types,
+            'pages': pages,
+            "new_skus": new_skus,
+        }
+        return render(request, 'list.html', context)

@@ -8,7 +8,7 @@
 				<span></span>
 				<ul class="subnav">
                     {% for type in types %}
-					<li><a href="#" class="{{ type.logo }}">{{ type.name }}</a></li>
+					<li><a href="{% url "goods:list" type.id 1 %}?sort=default" class="{{ type.logo }}">{{ type.name }}</a></li>
                     {% endfor  %}
 				</ul>
 			</div>

@@ -3,7 +3,7 @@ from django.views.generic import View
 from goods.models import GoodsSKU
 from django.http import JsonResponse
 from django_redis import get_redis_connection
-
+from utils.mixin import LoginRequireMixin
 class CartAddView(View):
     '''购物车添加'''
     def post(self, request):
@@ -38,4 +38,8 @@ class CartAddView(View):
         return JsonResponse({'res': 5, 'message': 'success', 'total_count': total_count})
 
 
+class CartInfoView(LoginRequireMixin , View):
+    '''购物车页面显示'''
+    def get(self, request):
+        return render(request, 'cart.html')
 

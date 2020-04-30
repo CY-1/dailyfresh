@@ -31,15 +31,15 @@
             <div>
                 <p>其他规格:</p>
             <ul>
-                {% for sku in same_spu_skus %}
-                    <li><a href="{% url 'goods:detail' sku.id %}" class="else_sku">{{ sku.name }}</a></li>
+                {% for sku1 in same_spu_skus %}
+                    <li><a href="{% url 'goods:detail' sku1.id %}" class="else_sku">{{ sku1.name }}</a></li>
                 {% endfor %}
             </ul>
             </div>
 			<div class="total">总价：<em>16.80元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
-				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+				<a href="javascript:;" sku_id="{{ sku.id }}" class="add_cart" id="add_cart">加入购物车</a>
 			</div>
 		</div>
 	</div>
@@ -66,7 +66,7 @@
 				<li class="active">商品介绍</li>
 				<li>评论</li>
 			</ul>
-
+        {% csrf_token %}
 			<div class="tab_content">
 				<dl>
 					<dt>商品详情：</dt>
@@ -93,25 +93,91 @@
     <div class="add_jump"></div>
 {% block bottomfiles %}
     	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
-	<script type="text/javascript">
     {% endblock bottomfiles %}
+    {#    计算商品的总价#}
+    <script type="text/javascript">
+    update_goods_amount()
+    function update_goods_amount() {
+        //计算商品的单价和数量
+        price = $(".show_pirze").children('em').text()
+        count = $('.num_show').val()
+        //计算价格
+        price = parseFloat(price)
+        count = parseInt(count)
+        amount = price*count
+        //设置总价格
+        $('.total').children('em').text(amount.toFixed(2)+"元")
+    }
+        {# 增加 减少#}
+    $('.add').click(function () {
+        count = $(".num_show").val()
+        count = parseInt(count)+1
+        $(".num_show").val(count)
+        update_goods_amount()
+    })
+    $('.minus').click(function () {
+        count = $(".num_show").val()
+        count = parseInt(count)-1
+        if (count<=0)
+            count=1
+        $(".num_show").val(count)
+        update_goods_amount()
+    })
+    //手动输入商品数量
+    $('.num_show').blur(function () {
+        //获取数目和价格
+        price = $(".show_pirze").children('em').text()
+        count = $('.num_show').val()
+        //效验count是否合法
+        if(isNaN(count)||count.trim().length==0||parseInt(count)<=0){
+            count=1
+        }
+        //重新设置商品数目
+        $(this).val(parseInt(count))
+        update_goods_amount()
+
+    })
+
+        //下面四句是获取坐标
 		var $add_x = $('#add_cart').offset().top;
 		var $add_y = $('#add_cart').offset().left;
 
 		var $to_x = $('#show_count').offset().top;
 		var $to_y = $('#show_count').offset().left;
         $('.else_sku').css({'color':'red'});
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+
 		$('#add_cart').click(function(){
-			$(".add_jump").stop().animate({
+		    // 获取商品id和数量
+            count = $(".num_show").val();
+            sku_id = $(this).attr('sku_id');
+            csrf =$('input[name="csrfmiddlewaretoken"]').val()
+
+            // 发起ajax请求 访问/cart/add/
+            params={"sku_id":sku_id, 'count':count, 'csrfmiddlewaretoken':csrf}
+
+            $.post('/cart/add/', params, function (data) {
+                if(data.res==5)
+                {   //添加成功
+
+                    //设置动画的样式
+                    $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+                    $(".add_jump").stop().animate({
 				'left': $to_y+7,
 				'top': $to_x+7},
 				"fast", function() {
 					$(".add_jump").fadeOut('fast',function(){
-						$('#show_count').html(2);
+					    //重新设置购物车的数目
+						$('#show_count').html(data.total_count);
 					});
 
 			});
+                }
+                else{
+                    alert(data.errmsg)
+                }
+            })
+
+
 		})
 	</script>
 {% endblock bottom %}

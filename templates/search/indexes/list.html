@@ -40,7 +40,7 @@
 			<ul class="goods_type_list clearfix">
 				{%   for sku in skus_page %}
                 <li>
-					<a href="../../detail.html"><img src="{{sku.image.url}}"></a>
+					<a href="{% url 'goods:detail' sku.id %}"><img src="{{sku.image.url}}"></a>
 					<h4><a href="{% url 'goods:detail' sku.id %}">{{ sku.name }}</a></h4>
 					<div class="operate">
 						<span class="prize">￥{{ sku.price }}</span>

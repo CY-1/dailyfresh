@@ -17,4 +17,6 @@ B2B by Django3.0.5
 - ### 搜索
     - 采用haystack框架 jieba分词
     - 为了兼容新版本Django模块 安装six模块 复制到了django.utils里面
-
+- ### 购物车
+    - 后台通过ajax添加购物车
+    - 存在redis中

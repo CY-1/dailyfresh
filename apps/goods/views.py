@@ -64,10 +64,11 @@ class DetailView(View):
 
         # 获取购物车数量
         user = request.user
+
         cart_count = 0
         if user.is_authenticated:
             conn = get_redis_connection('default')
-            cart_key = "cart_%d"% user.id
+            cart_key = "cart_%d" % user.id
             cart_count = conn.hlen(cart_key)
             conn = get_redis_connection("default")
             history_key = "history_%d"% user.id
@@ -76,7 +77,6 @@ class DetailView(View):
             conn.lpush(history_key, goods_id)
             # 保留固定的元素
             conn.ltrim(history_key, 0, 4)
-
         # 组织上下文
         context = {
             'sku': sku,
@@ -113,7 +113,10 @@ class ListView(View):
             skus = GoodsSKU.objects.filter(type=type).order_by('-id')
             sort = 'default'
         paginator = Paginator(skus, 1)
-        page = int(page)
+        try:
+            page = int(page)
+        except Exception as e:
+            page = 1
         if page>paginator.num_pages:
             page = 1
         skus_page = paginator.page(page)
@@ -131,10 +134,7 @@ class ListView(View):
             pages = range(num_pages-4, num_pages+1)
         else:
             pages = range(page-2, page+3)
-        try:
-            page = int(page)
-        except Exception as e:
-            page = 1
+
         # 新品推荐
         new_skus = GoodsSKU.objects.filter(type=type).order_by('-create_time')[:2]
         # 购物车数目

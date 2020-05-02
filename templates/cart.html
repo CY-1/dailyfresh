@@ -13,9 +13,11 @@
         <li class="col05">小计</li>
         <li class="col06">操作</li>
     </ul>
+    <form action="{% url 'order:place' %}" method="post">
+    {% csrf_token %}
     {% for sku in skus %}
         <ul class="cart_list_td clearfix">
-            <li class="col01"><input type="checkbox" name="" checked></li>
+            <li class="col01"><input type="checkbox" name="sku_ids" value="{{ sku.id }}" checked></li>
             <li class="col02"><img src="{{ sku.image.url }}"></li>
             <li class="col03">{{ sku.name }}<br><em>{{ sku.price }}元/{{ sku.unite }}</em></li>
             <li class="col04">{{ sku.unite }}</li>
@@ -38,8 +40,9 @@
         <li class="col01"><input type="checkbox" name="" checked=""></li>
         <li class="col02">全选</li>
         <li class="col03">合计(不含运费)：<span>¥</span><em>{{ total_price }}</em><br>共计<b>{{ total_count }}</b>件商品</li>
-        <li class="col04"><a href="../static/place_order.html">去结算</a></li>
+        <li class="col04"><input type="submit" value="去结算"></li>
     </ul>
+    </form>
 
 {% endblock body %}
 {% block bottomfiles %}
@@ -211,11 +214,11 @@
         //删除购物车记录
         $('.cart_list_td').children('.col08').children('a').click(function () {
             //获取商品id
-            sku_id=$(this).parents('ul').find('.num_show').attr('sku_id')
+            sku_id = $(this).parents('ul').find('.num_show').attr('sku_id')
             //获取商品所在的url元素
             sku_ul = $(this).parents('ul')
             csrf = $('input[name="csrfmiddlewaretoken"]').val();
-            params = {'sku_id': sku_id, 'csrfmiddlewaretoken':csrf};
+            params = {'sku_id': sku_id, 'csrfmiddlewaretoken': csrf};
             $.ajaxSettings.async = false
             $.post('/cart/delete/', params, function (data) {
                 if (data.res == 3) {
@@ -223,12 +226,11 @@
                     sku_ul.remove()
                     //获取sku_ul中选中状态
                     is_checked = sku_ul.find(':checkbox').prop('checked')
-                    if(is_checked)
-                    {
+                    if (is_checked) {
                         update_page_info();
 
                     }
-                $('.total_count').children("em").text(data.total_count)
+                    $('.total_count').children("em").text(data.total_count)
                 } else {
                     //更新失败
                     alert(data.errmsg)

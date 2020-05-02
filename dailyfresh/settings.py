@@ -175,7 +175,7 @@ FDFS_CLIENT_CONF = './utils/fdfs/client.conf'
 
 # 设置FDFS储存服务器上nginx的IP和端口号
 FDFS_URL = "http://192.168.80.132:8888/"
-# 群文检索框架的卑职
+# 群文检索框架的配置
 HAYSTACK_CONNECTIONS = {
     'default': {
         #使用whoosh引擎 engine是一个路径

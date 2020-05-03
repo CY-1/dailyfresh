@@ -20,13 +20,13 @@
 	<h3 class="common_title">支付方式</h3>	
 	<div class="common_list_con clearfix">
 		<div class="pay_style_con clearfix">
-			<input type="radio" name="pay_style" checked>
+			<input type="radio" name="pay_style" value="1" checked>
 			<label class="cash">货到付款</label>
-			<input type="radio" name="pay_style">
+			<input type="radio" name="pay_style" value="2">
 			<label class="weixin">微信支付</label>
-			<input type="radio" name="pay_style">
+			<input type="radio" name="pay_style" value="3">
 			<label class="zhifubao"></label>
-			<input type="radio" name="pay_style">
+			<input type="radio" name="pay_style" value="4">
 			<label class="bank">银行卡支付</label>
 		</div>
 	</div>
@@ -66,7 +66,8 @@
 	</div>
 
 	<div class="order_submit clearfix">
-		<a href="javascript:;" id="order_btn">提交订单</a>
+    {% csrf_token %}
+		<a href="javascript:;" sku_ids="{{ sku_ids }}" id="order_btn">提交订单</a>
 	</div>	
 
 {% endblock %}
@@ -82,6 +83,29 @@
 {% block bottomfiles %}
 	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
 	<script type="text/javascript">
+    $("#order_btn").click(function () {
+                    //获取信息
+            addr_id = $('input[name="addr_id"]:checked').val()
+            pay_method = $('input[name="pay_style"]:checked').val()
+            sku_ids = $(this).attr("sku_ids")
+            csrf = $('input[name="csrfmiddlewaretoken"]').val()
+
+            //发起ajax请求
+        params={'addr_id':addr_id, "pay_method":pay_method, 'sku_ids':sku_ids,
+        'csrfmiddlewaretoken':csrf,
+        }
+        $.post('/order/commit/', params,function (data) {
+            if (data.res==5)
+            {
+                alert('成功')
+            }
+            else{
+                alert(data.errmsg)
+            }
+
+        })
+    })
+
 		$('#order_btn').click(function() {
 			localStorage.setItem('order_finish',2);
 

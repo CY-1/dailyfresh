@@ -12,13 +12,12 @@ from django.db import transaction
 
 class OrderPlaceView(LoginRequireMixin, View):
     '''提交订单页面'''
-
     def post(self, request):
         '''提交订单页面'''
         user = request.user
         # 获取参数sku_ids
         sku_ids = request.POST.getlist("sku_ids")  # [1,26]
-        # 效验阐述
+        # 效验参数
         if not sku_ids:
             return redirect(reverse('cart:show'))
 
@@ -75,11 +74,12 @@ class OrderCommitView(View):
     @transaction.atomic
     def post(self, request):
         '''订单创建'''
+
         # 判断用户是否登录
         user = request.user
         if not user.is_authenticated:
             return JsonResponse({"res": 0, "errmsg": "用户未登录"})
-        # 接受参数
+        # 接收参数
         addr_id = request.POST.get("addr_id")
         pay_method = request.POST.get("pay_method")
         sku_ids = request.POST.get("sku_ids")
@@ -99,8 +99,10 @@ class OrderCommitView(View):
         # 总数目和总金额
         total_count = 0
         total_price = 0
+        # 设置事务保存点
         save_id = transaction.savepoint()
         try:
+            # 创建订单信息
             order = OrderInfo.objects.create(order_id=order_id,
                                              user=user,
                                              addr=addr,
@@ -126,26 +128,26 @@ class OrderCommitView(View):
                 if int(count) > sku.stock:
                     transaction.savepoint_rollback(save_id)
                     return JsonResponse({"res": 6, "errmsg": "库存不足"})
-
+                # 向订单商品表中添加信息
                 OrderGoods.objects.create(
                     order=order,
                     sku=sku,
                     count=count,
                     price=sku.price,
                 )
-                # todo: 更新商品库存和销量
+                #  更新商品库存和销量
                 sku.stock -= int(count)
                 sku.sales += int(count)
                 sku.save()
-                # todo: 累加计算订单商品的总数目和总价格
+                # 累加计算订单商品的总数目和总价格
                 amount = sku.price * int(count)
                 total_count += int(count)
                 total_price += amount
-            # todo：更新订单信息表中的商品总数量和总价格
+            # 更新订单信息表中的商品总数量和总价格
             order.total_count = total_count
             order.total_price = total_price
             order.save()
-            # todo: 清楚用户购物车中对应的记录
+            # 清除用户购物车中对应的记录
         except Exception as  e:
             transaction.savepoint_rollback(save_id)
             return JsonResponse({'res': 7, "errmsg": '下单失败'})
@@ -230,6 +232,7 @@ class OrderCommitView2(View):
                             transaction.savepoint_rollback(save_id)
                             return JsonResponse({"res": 7, 'errmsg': "下单失败"})
                         continue
+                    # 向订单商品表中添加信息
                     OrderGoods.objects.create(
                         order=order,
                         sku=sku,

@@ -1,7 +1,9 @@
 {% extends 'base_user_center.html' %}
+{% load static %}
 {% block right_content %}
 <div class="right_content clearfix">
 				<h3 class="common_title2">全部订单</h3>
+{% csrf_token %}
 	            {% for order in order_page %}
                 <ul class="order_list_th w978 clearfix">
 					<li class="col01">{{ order.create_time }}</li>
@@ -25,7 +27,7 @@
 							</td>
 							<td width="15%">{{ order.total_price|add:order.transit_price }}(含运费:{{ order.transit_price }})元</td>
 							<td width="15%">{{ order.status_name }}</td>
-							<td width="15%"><a href="#" class="oper_btn">去付款</a></td>
+							<td width="15%"><a href="#" order_id="{{ order.order_id }}" status="{{ order.order_status }}" class="oper_btn">去付款</a></td>
 						</tr>
 					</tbody>
 				</table>
@@ -47,4 +49,38 @@
                     {% endif %}
 				</div>
 		</div>
+{% endblock %}
+{% block bottomfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+    $('.oper_btn').click(function () {
+            //获取订单的status
+        status = $(this).attr("status")
+        if (status==1)
+        {
+            //进行支付
+            //获取订单iod
+            order_id = $(this).attr("order_id")
+            //发去ajx请求
+            csrf = $('input[name="csrfmiddlewaretoken"]').val()
+            params={
+                'order_id':order_id,
+                'csrfmiddlewaretoken':csrf
+            }
+            $.post('/order/pay/',params, function (data) {
+                if(data.res==3)
+                {
+                    //引导用户到支付页面
+                    window.open(data.pay_url)
+                }
+                else{
+                    alert(data.errmsg)
+                }
+            })
+        }
+        else{
+
+        }
+    })
+    </script>
 {% endblock %}

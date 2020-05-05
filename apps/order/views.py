@@ -73,7 +73,7 @@ class OrderCommitView(View):
 
     @transaction.atomic
     def post(self, request):
-        '''订单创建'''
+        '''订单创建 向df_order_info添加一条记录 向df_order_goods添加商品个数的信息'''
 
         # 判断用户是否登录
         user = request.user

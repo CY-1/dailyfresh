@@ -12,7 +12,7 @@ urlpatterns = [
    url(r"^login/$", LoginView.as_view(), name="login"),
    url(r"^active/(?P<token>.*)/$", ActiveView.as_view()),
    url(r"^$", UserInfoView.as_view(), name='user'),# 用户中心信息页
-   url(r"^order/$", UserOrderView.as_view(), name='order'),
+   url(r"^order/(?P<page>\d+)/$", UserOrderView.as_view(), name='order'),
    url(r"^address/$", UserAddressView.as_view(), name='address'),
    url(r"^logout/$", LogoutView.as_view(), name='logout'),# 注销登录
 

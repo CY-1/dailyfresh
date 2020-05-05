@@ -97,7 +97,17 @@
         $.post('/order/commit/', params,function (data) {
             if (data.res==5)
             {
-                alert('成功')
+            			localStorage.setItem('order_finish', 2);
+
+			$('.popup_con').fadeIn('fast', function() {
+
+				setTimeout(function(){
+					$('.popup_con').fadeOut('fast',function(){
+						window.location.href = '{% url 'user:order' 1 %}';
+					});
+				},3000)
+
+			});
             }
             else{
                 alert(data.errmsg)
@@ -105,19 +115,5 @@
 
         })
     })
-
-		{#$('#order_btn').click(function() {#}
-		{#	localStorage.setItem('order_finish',2);#}
-        {##}
-		{#	$('.popup_con').fadeIn('fast', function() {#}
-        {##}
-		{#		setTimeout(function(){#}
-		{#			$('.popup_con').fadeOut('fast',function(){#}
-		{#				window.location.href = 'index.html';#}
-		{#			});#}
-		{#		},3000)#}
-        {##}
-		{#	});#}
-		{# });#}
 	</script>
 {% endblock %}

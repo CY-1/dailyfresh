@@ -72,6 +72,17 @@
                 {
                     //引导用户到支付页面
                     window.open(data.pay_url)
+                    //访问/order/check 传递参数商品的id
+
+                    $.post('/order/check/',params, function () {
+                        //
+                        if (data.res==3)
+                        {
+                            alert('支付成功');
+                            location.reload()
+                        }
+                    })
+
                 }
                 else{
                     alert(data.errmsg)

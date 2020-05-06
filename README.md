@@ -22,7 +22,7 @@ B2B by Django3.0.5
     - 存在redis中
     - 订单并发问题用悲观锁解决和mysql事务解决
     - 支付宝沙盒账号测试
-### 简单启动项目 
+### win下简单启动项目 
 - 下载压缩包 解压缩 pycharm打开
 - 执行迁移生成mysql表 打开redis服务器端 fdfs_trackerd和fdfs_storaged启动 nginx启动
 - 支付宝获取公钥私钥放在order文件夹下的 alipy_public_key_pem和app_private_key.pem

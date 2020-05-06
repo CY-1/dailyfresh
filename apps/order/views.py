@@ -379,3 +379,72 @@ class OrderCheck(View):
                 # 支付出错
                 return JsonResponse({"res": 4, 'errmsg':"支付失败"})
 
+
+class OrderCommentView(LoginRequireMixin, View):
+    def get(self, request, order_id):
+        """展示评论页"""
+        user = request.user
+
+        # 校验数据
+        if not order_id:
+            return redirect(reverse('user:order'))
+        try:
+            order = OrderInfo.objects.get(order_id=order_id, user=user)
+        except OrderInfo.DoesNotExist:
+            return redirect(reverse('user:order'))
+
+        # 需要根据状态码获取状态
+        order.status_name = OrderInfo.ORDER_STATUS[order.order_status]
+
+        # 根据订单id查询对应商品，计算小计金额,不能使用get
+        order_skus = OrderGoods.objects.filter(order_id=order_id)
+        for order_sku in order_skus:
+            amount = order_sku.count * order_sku.price
+            order_sku.amount = amount
+        # 增加实例属性
+        order.order_skus = order_skus
+
+        context = {
+            'order': order,
+        }
+        return render(request, 'order_comment.html', context)
+
+    def post(self, request, order_id):
+        """处理评论内容"""
+        # 判断是否登录
+        user = request.user
+
+        # 判断order_id是否为空
+        if not order_id:
+            return redirect(reverse('user:order'))
+
+        # 根据order_id查询当前登录用户订单
+        try:
+            order = OrderInfo.objects.get(order_id=order_id, user=user)
+        except OrderInfo.DoesNotExist:
+            return redirect(reverse('user:order'))
+
+        # 获取评论条数
+        total_count = int(request.POST.get("total_count"))
+
+        # 循环获取订单中商品的评论内容
+        for i in range(1, total_count + 1):
+            # 获取评论的商品的id
+            sku_id = request.POST.get("sku_%d" % i)  # sku_1 sku_2
+            # 获取评论的商品的内容
+            content = request.POST.get('content_%d' % i, '')  # comment_1 comment_2
+
+            try:
+                order_goods = OrderGoods.objects.get(order=order, sku_id=sku_id)
+            except OrderGoods.DoesNotExist:
+                continue
+
+            # 保存评论到订单商品表
+            order_goods.comment = content
+            order_goods.save()
+
+        # 修改订单的状态为“已完成”
+        order.order_status = 5  # 已完成
+        order.save()
+        # 1代表第一页的意思，不传会报错
+        return redirect(reverse("user:order", kwargs={"page": 1}))

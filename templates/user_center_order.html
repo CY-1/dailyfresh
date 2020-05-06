@@ -53,14 +53,26 @@
 {% block bottomfiles %}
     <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
     <script>
+    $(".oper_btn").each(function () {
+        status = $(this).attr("status")
+        if(status == 1){
+            $(this).text("去支付")
+        }
+        else if (status==4){
+            $(this).text("去评价")
+        }
+        else if(status==5){
+            $(this).text('已完成')
+        }
+    })
     $('.oper_btn').click(function () {
             //获取订单的status
-        status = $(this).attr("status")
+        status = $(this).attr("status");
+        //获取订单iod
+        order_id = $(this).attr("order_id")
         if (status==1)
         {
             //进行支付
-            //获取订单iod
-            order_id = $(this).attr("order_id")
             //发去ajx请求
             csrf = $('input[name="csrfmiddlewaretoken"]').val()
             params={
@@ -89,8 +101,8 @@
                 }
             })
         }
-        else{
-
+        else if (status == 4){
+            location.href = '/order/comment/'+order_id+"/"
         }
     })
     </script>

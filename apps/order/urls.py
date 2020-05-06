@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.urls import path,include,re_path
-from order.views import OrderPlaceView, OrderCommitView, OrderCommitView2, OrderPayView, OrderCheck
+from order.views import OrderPlaceView, OrderCommitView, OrderCommitView2, OrderPayView, OrderCheck, OrderCommentView
 from django.conf.urls import url
 app_name = 'order'
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^commit/$', OrderCommitView.as_view(), name='commit'),# 订单创建
     url(r'^pay/$', OrderPayView.as_view(), name='pay'),# 支付
     url(r'^check/$', OrderCheck.as_view(), name='check'),# 验证支付
+    url(r'^comment/(?P<order_id>.+)/$', OrderCommentView.as_view(), name='comment'),# 验证支付
 ]# pgcshl9204@sandbox.com

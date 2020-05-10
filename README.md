@@ -25,6 +25,6 @@ B2B by Django3.0.5
 ### win下简单启动项目 
 - 下载压缩包 解压缩 pycharm打开
 - 执行迁移生成mysql表 配置redis服务器端 fdfs_trackerd和fdfs_storaged启动 nginx启动
-- 修改好数据库中对应的fastDFS内容
+- 上传图片到fastDFS，得到指纹，修改好数据库中对应的fastDFS指纹
 - 支付宝获取公钥私钥放在order文件夹下的 alipy_public_key_pem和app_private_key.pem
 - 到Scripts文件夹下执行 python ../manage.py runserver

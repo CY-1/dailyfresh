@@ -1,15 +1,23 @@
 {% extends 'base_user_center.html' %}
 {% block right_content %}
-
-
+{% load static %}
+{% csrf_token %}
 <div class="right_content clearfix">
 				<h3 class="common_title2">收货地址</h3>
                 {{ errmsg }}
 				<div class="site_con">
 					<dl>
 						<dt>当前地址：</dt>
-                        {% if address %}
-						<dd>地址：{{ address.addr }}收件人：{{ address.receiver }}手机号{{ address.phone }}</dd>
+                       <dd>地址：{{ default_address.addr }}收件人：{{ default_address.receiver }}手机号{{ default_address.phone }}</dd>
+                        <dd>更换地址</dd>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {% if default_address %}
+                            <select id="select">
+                                {% for i in address %}
+                                <option value ="{{ i.id }}">地址：{{ i.addr }}收件人：{{ i.receiver }}手机号{{ i.phone }}</option>
+                                {% endfor %}
+                            </select>
+                            <input id="change_address" type="submit" value="确定选择" style="height: 20px;font-size: 13px;line-height: 13px">
                         {% else %}
                         <dd>无默认地址</dd>
                         {% endif %}
@@ -40,4 +48,26 @@
 					</form>
 				</div>
 		</div>
+{% endblock %}
+{% block bottomfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+    $("#change_address").click(function () {
+        new_address_value = $("#select option:selected").attr("value");
+        csrf = $('input[name="csrfmiddlewaretoken"]').val();
+        params={
+            "new_address_value":new_address_value,
+            'csrfmiddlewaretoken':csrf,
+        }
+        $.post('/user/change_address/',params, function (data) {
+
+            if (data.res==3)
+            {
+                alert('修改成功');
+                location.reload()
+            }
+                    })
+    })
+
+    </script>
 {% endblock %}

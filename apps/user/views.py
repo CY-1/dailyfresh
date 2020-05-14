@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import re
+from django.http import JsonResponse
 from django.core.paginator import Paginator
 from goods.models import GoodsSKU
 from django.http import HttpResponse
@@ -263,9 +264,9 @@ class UserAddressView(LoginRequireMixin, View):
     def get(self, request):
         # 获取用户的默认地址信息
         user = request.user
-        address = Address.objects.get_default_address(user)
-
-        return render(request, 'user_center_site.html', {"page": "address", "address": address})
+        default_address = Address.objects.get_default_address(user)
+        address = Address.objects.filter(user=user, is_default=0)
+        return render(request, 'user_center_site.html', {"page": "address", "default_address": default_address, "address": address})
     def post(self, request):
         """地址的添加"""
         # 接受数据
@@ -302,3 +303,17 @@ class UserAddressView(LoginRequireMixin, View):
         return redirect(reverse("user:address"))
 
 
+# /user/address
+class UserChangeAddress(LoginRequireMixin, View):
+
+    def post(self, request):
+        user = request.user
+        # 让原来的默认地址变成普通地址
+        old_default_address = Address.objects.get_default_address(user)
+        old_default_address.is_default = 0
+        old_default_address.save()
+        # 产生新的默认地址
+        new_default_address = Address.objects.get(id=request.POST.get("new_address_value"))
+        new_default_address.is_default = 1
+        new_default_address.save()
+        return JsonResponse({"res": 3})

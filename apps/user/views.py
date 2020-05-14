@@ -260,7 +260,6 @@ class UserOrderView(LoginRequireMixin, View):
 # /user/address
 class UserAddressView(LoginRequireMixin, View):
     '''用户中心 地址'''
-    # TODO 以后修改到能选择默认地址
     def get(self, request):
         # 获取用户的默认地址信息
         user = request.user

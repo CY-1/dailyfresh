@@ -153,6 +153,7 @@ class OrderCommitView(View):
             # 清除用户购物车中对应的记录
         except Exception as  e:
             transaction.savepoint_rollback(save_id)
+
             return JsonResponse({'res': 7, "errmsg": '下单失败'})
         transaction.savepoint_commit(save_id)
         conn.hdel(cart_key, *sku_ids)
@@ -342,6 +343,7 @@ class OrderCheck(View):
                                           pay_method=3,
                                           order_status=1)
         except OrderInfo.DoesNotExist:
+
             return JsonResponse({'res': 2, 'errmsg': '订单错误'})
 
         # 业务处理：使用python sdk调用支付宝的支付接口

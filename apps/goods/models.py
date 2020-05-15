@@ -37,6 +37,10 @@ class GoodsSKU(BaseModel):
     sales = models.IntegerField(default=0, verbose_name='商品销量')
     status = models.SmallIntegerField(default=1, choices=status_choices, verbose_name='商品状态')
 
+    # 应该加上这步，表示显示时返回的是自定义信息，而不是 object 形式
+    def __str__(self):              # __str__ on Python 3
+        return self.name
+
     class Meta:
         db_table = 'df_goods_sku'
         verbose_name = '商品'

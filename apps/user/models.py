@@ -18,6 +18,9 @@ class AddressManager(models.Manager):
 class User(AbstractUser, BaseModel):
     '''用户模型类'''
 
+    def __str__(self):
+        return self.username
+
     class Meta:
         db_table = 'df_user'
         verbose_name = '用户'
@@ -32,7 +35,11 @@ class Address(BaseModel):
     zip_code = models.CharField(max_length=6, null=True, verbose_name='邮政编码')
     phone = models.CharField(max_length=11, verbose_name='联系电话')
     is_default = models.BooleanField(default=False, verbose_name='是否默认')
-    objects =AddressManager()
+    objects = AddressManager()
+
+    def __str__(self):
+        return self.user.username+"的地址"
+
     class Meta:
         db_table = 'df_address'
         verbose_name = '地址'

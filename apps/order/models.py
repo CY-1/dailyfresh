@@ -37,6 +37,9 @@ class OrderInfo(BaseModel):
     order_status = models.SmallIntegerField(choices=ORDER_STATUS_CHOICES, default=1, verbose_name='订单状态')
     trade_no = models.CharField(max_length=128, default="", verbose_name='支付编号')
 
+    def __str__(self):
+        return self.user.username+"的订单"
+
     class Meta:
         db_table = 'df_order_info'
         verbose_name = '订单'
@@ -50,6 +53,9 @@ class OrderGoods(BaseModel):
     count = models.IntegerField(default=1, verbose_name='商品数目')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='商品价格')
     comment = models.CharField(max_length=256, default="", verbose_name='评论')
+
+    def __str__(self):
+        return str(self.order)+"   "+self.sku.name
 
     class Meta:
         db_table = 'df_order_goods'

@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义使用tinymce</title>
+    <script src="./js/jquery-1.12.4.min.js"></script>
+   <script src="./static/tinymce/tinymce.min.js"></script>
+<script>
+tinymce.init({selector:'textarea',
+    plugins: [
+        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+        "searchreplace wordcount visualblocks visualchars code fullscreen",
+        "insertdatetime media nonbreaking save table contextmenu directionality",
+        "emoticons template paste textcolor colorpicker textpattern"
+    ],
+});
+</script>
+</head>
+<body>
+<form action="">
+    <label>
+        <textarea name="comment_content">富文本</textarea>
+    </label>
+    <br>
+    <input type="submit" value="提交评论" class="btn btn-default">
+</form>
+</body>
+</html>

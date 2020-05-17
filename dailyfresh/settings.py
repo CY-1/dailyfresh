@@ -133,7 +133,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-TINYMCE_DEFAULT_CONFIG = {
+DEFAULT_CONFIG = {
     'theme': 'advanced',
     'width': 600,
     'height': 400,
@@ -189,3 +189,9 @@ HAYSTACK_CONNECTIONS = {
 
 #当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+
+# simpleuo的设计
+SIMPLEUI_ICON = {
+    '订单商品': 'fab fa-500px',
+}

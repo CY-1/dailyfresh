@@ -57,6 +57,8 @@ class Goods(BaseModel):
         db_table = 'df_goods'
         verbose_name = '商品SPU'
         verbose_name_plural = verbose_name
+    def __str__(self):
+        return "goods"+self.name
 
 
 class GoodsImage(BaseModel):

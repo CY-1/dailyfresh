@@ -37,6 +37,7 @@
                     {% if order_page.has_previous %}
 					<a href="{% url 'user:order' order_page.previous_page_number %}">上一页 </a>
                         {% endif %}
+
                 {% for pindex in pages %}
                  {% if pindex == order_page.number %}
 					<a href="{% url 'user:order' pindex %}" class="active">{{ pindex }}</a>

@@ -211,6 +211,7 @@ class UserOrderView(LoginRequireMixin, View):
         #
         user = request.user
         orders = OrderInfo.objects.filter(user=user).order_by("-create_time")
+
         # 遍历获取订单商品的信息
         for order in orders:
             # 根据order_Id 查询订单商品信息
@@ -249,10 +250,12 @@ class UserOrderView(LoginRequireMixin, View):
         else:
             pages = range(page-2, page+3)
         # 组织上下文
+        if len(orders) == 0:
+            pages = None
         context = {
             'order_page': order_page,
             'pages': pages,
-            'page': 'order',
+            'page': orders,
         }
         return render(request, 'user_center_order.html', context)
 

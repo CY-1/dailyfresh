@@ -1,6 +1,5 @@
 # dailyfresh
 B2B by Django3.0.5
-
 黑马程序员Django练习项目重构到到新版本Django3.0.5
 ## 用户
 - ### 用户注册
@@ -31,3 +30,6 @@ B2B by Django3.0.5
 - 在购买商品时 必须选择支付宝支付
 - 到Scripts文件夹下执行 python ../manage.py runserver
 - 详细过程在Issue里面有课件
+## TODO
+- 自由删除地址
+- 自由删除订单

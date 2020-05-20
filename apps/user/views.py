@@ -310,12 +310,17 @@ class UserChangeAddress(LoginRequireMixin, View):
 
     def post(self, request):
         user = request.user
-        # 让原来的默认地址变成普通地址
-        old_default_address = Address.objects.get_default_address(user)
-        old_default_address.is_default = 0
-        old_default_address.save()
         # 产生新的默认地址
-        new_default_address = Address.objects.get(id=request.POST.get("new_address_value"))
-        new_default_address.is_default = 1
-        new_default_address.save()
+
+        if request.POST.get("is_delete") == "false":
+            # 让原来的默认地址变成普通地址
+            old_default_address = Address.objects.get_default_address(user)
+            old_default_address.is_default = 0
+            old_default_address.save()
+            new_default_address = Address.objects.get(id=request.POST.get("new_address_value"))
+            new_default_address.is_default = 1
+            new_default_address.save()
+        else:
+            new_default_address = Address.objects.get(id=request.POST.get("new_address_value"))
+            new_default_address.delete()
         return JsonResponse({"res": 3})

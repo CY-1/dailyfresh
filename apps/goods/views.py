@@ -30,7 +30,6 @@ class IndexView(View):
         if user.is_authenticated:
             conn = get_redis_connection('default')
             cart_key = 'cart_%d'%user.id
-            print(cart_key)
             # 获取用户购物车商品里面的数据
             cart_count = conn.hlen(cart_key)
         # 组织模板上下文
@@ -102,7 +101,6 @@ class ListView(View):
             return redirect(reverse("goods:index"))
         # 获取排序的方式
         sort = request.GET.get('sort')
-        print(sort)
         # 获取商品的分类信息
         types = GoodsType.objects.all()
         if sort=='price':

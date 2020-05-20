@@ -9,15 +9,16 @@
 					<dl>
 						<dt>当前地址：</dt>
                        <dd>地址：{{ default_address.addr }}收件人：{{ default_address.receiver }}手机号{{ default_address.phone }}</dd>
-                        <dd>更换地址</dd>
+                        <dt>更换地址：</dt>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% if default_address %}
-                            <select id="select">
+                            <select id="select" style="height: 20px;overflow: auto">
                                 {% for i in address %}
                                 <option value ="{{ i.id }}">地址：{{ i.addr }}收件人：{{ i.receiver }}手机号{{ i.phone }}</option>
                                 {% endfor %}
                             </select>
-                            <input id="change_address" type="submit" value="确定选择" style="height: 20px;font-size: 13px;line-height: 13px">
+                            <input id="change_address" type="submit" value="确定更换" style="height: 20px;font-size: 13px;line-height: 13px">
+                            <input id="delete_address" type="submit" value="删除地址" style="height: 20px;font-size: 13px;line-height: 13px">
                         {% else %}
                         <dd>无默认地址</dd>
                         {% endif %}
@@ -54,16 +55,36 @@
     <script>
     $("#change_address").click(function () {
         new_address_value = $("#select option:selected").attr("value");
+        is_delete= false;
         csrf = $('input[name="csrfmiddlewaretoken"]').val();
         params={
             "new_address_value":new_address_value,
             'csrfmiddlewaretoken':csrf,
+            "is_delete":is_delete,
         }
         $.post('/user/change_address/',params, function (data) {
 
             if (data.res==3)
             {
                 alert('修改成功');
+                location.reload()
+            }
+                    })
+    })
+    $("#delete_address").click(function () {
+        new_address_value = $("#select option:selected").attr("value");
+        is_delete= true;
+        csrf = $('input[name="csrfmiddlewaretoken"]').val();
+        params={
+            "new_address_value":new_address_value,
+            'csrfmiddlewaretoken':csrf,
+            "is_delete":is_delete,
+        }
+        $.post('/user/change_address/',params, function (data) {
+
+            if (data.res==3)
+            {
+                alert('删除成功');
                 location.reload()
             }
                     })

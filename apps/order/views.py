@@ -450,3 +450,22 @@ class OrderCommentView(LoginRequireMixin, View):
         order.save()
         # 1代表第一页的意思，不传会报错
         return redirect(reverse("user:order", kwargs={"page": 1}))
+
+
+class OrderDelete(LoginRequireMixin, View):
+    """删除订单"""
+
+    def post(self, request):
+        id = request.POST.get("order_id")
+        print(id)
+        a = OrderGoods.objects.filter(order_id=id)
+        for i in a:
+            i.is_delete = 1
+            i.save()
+        a = OrderInfo.objects.filter(order_id=id)
+        print(a)
+        for i in a:
+            i.is_delete = 1
+            i.save()
+
+        return JsonResponse({"res": 3})

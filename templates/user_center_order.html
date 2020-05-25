@@ -9,6 +9,8 @@
 					<li class="col01">{{ order.create_time }}</li>
 					<li class="col02">订单号：{{ order.order_id }}</li>
 					<li class="col02 stress">{{ order.status_name }}</li>
+					<li class="stress" id="delete_order" order_id="{{ order.order_id }}" style="padding-left: 276px">删除订单</li>
+
 				</ul>
 
 				<table class="order_list_table w980">
@@ -54,6 +56,24 @@
 {% block bottomfiles %}
     <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
     <script>
+    $("#delete_order").click(function () {
+            if(confirm("是否打开")){
+                order_id = $(this).attr("order_id");
+                csrf = $('input[name="csrfmiddlewaretoken"]').val()
+                params={
+                'order_id':order_id,
+                'csrfmiddlewaretoken':csrf
+            }
+            $.post('/order/delete/',params, function (data) {
+                //
+                if (data.res==3)
+                {
+                    alert('删除成功');
+                    location.reload()
+                }
+            })
+    }
+    })
     $(".oper_btn").each(function () {
         status = $(this).attr("status")
         if(status == 1){

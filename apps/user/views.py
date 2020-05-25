@@ -210,7 +210,7 @@ class UserOrderView(LoginRequireMixin, View):
         # 获取用户的默认地址信息
         #
         user = request.user
-        orders = OrderInfo.objects.filter(user=user).order_by("-create_time")
+        orders = OrderInfo.objects.filter(user=user, is_delete=0).order_by("-create_time")
 
         # 遍历获取订单商品的信息
         for order in orders:
@@ -305,7 +305,7 @@ class UserAddressView(LoginRequireMixin, View):
         return redirect(reverse("user:address"))
 
 
-# /user/address
+# 修改地址
 class UserChangeAddress(LoginRequireMixin, View):
 
     def post(self, request):
@@ -324,3 +324,4 @@ class UserChangeAddress(LoginRequireMixin, View):
             new_default_address = Address.objects.get(id=request.POST.get("new_address_value"))
             new_default_address.delete()
         return JsonResponse({"res": 3})
+

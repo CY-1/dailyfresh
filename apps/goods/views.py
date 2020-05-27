@@ -110,7 +110,7 @@ class ListView(View):
         else:
             skus = GoodsSKU.objects.filter(type=type).order_by('-id')
             sort = 'default'
-        paginator = Paginator(skus, 1)
+        paginator = Paginator(skus, 5)
         try:
             page = int(page)
         except Exception as e:

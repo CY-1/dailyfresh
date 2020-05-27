@@ -96,6 +96,8 @@ class IndexTypeGoodsBanner(BaseModel):
     display_type = models.SmallIntegerField(default=1, choices=DISPLAY_TYPE_CHOICES, verbose_name='展示类型')
     index = models.SmallIntegerField(default=0, verbose_name='展示顺序')
 
+    def __str__(self):
+        return self.sku.name
     class Meta:
         db_table = 'df_index_type_goods'
         verbose_name = "主页分类展示商品"

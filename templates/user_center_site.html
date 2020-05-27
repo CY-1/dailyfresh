@@ -7,11 +7,13 @@
                 {{ errmsg }}
 				<div class="site_con">
 					<dl>
+                        {% if default_address %}
 						<dt>当前地址：</dt>
                        <dd>地址：{{ default_address.addr }}收件人：{{ default_address.receiver }}手机号{{ default_address.phone }}</dd>
-                        <dt>更换地址：</dt>
+
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {% if default_address %}
+                            {% if address %}
+                                <dt>更换地址：</dt>
                             <select id="select" style="height: 20px;overflow: auto">
                                 {% for i in address %}
                                 <option value ="{{ i.id }}">地址：{{ i.addr }}收件人：{{ i.receiver }}手机号{{ i.phone }}</option>
@@ -19,6 +21,7 @@
                             </select>
                             <input id="change_address" type="submit" value="确定更换" style="height: 20px;font-size: 13px;line-height: 13px">
                             <input id="delete_address" type="submit" value="删除地址" style="height: 20px;font-size: 13px;line-height: 13px">
+                                {% endif %}
                         {% else %}
                         <dd>无默认地址</dd>
                         {% endif %}

@@ -18,8 +18,12 @@
 			<div class="welcome fl">欢迎来到天天生鲜!</div>
 			<div class="fr">
                 {% if user.is_authenticated %}
+                    {% if user.image != "1" %}
+                        <img  class="login_btn fl" src="http://192.168.80.132:8888/{{ user.image }}" width="27px" height="25px" style="padding-top: 2px;padding-right: 4px">
+                        {% endif %}
 				<div class="login_btn fl">
 					欢迎您：<em>{{ user.username }}</em>
+
                 <span>|</span>
                     <a href="{% url "user:logout" %}">退出</a>
 				</div>

@@ -4,11 +4,16 @@
 		<div class="right_content clearfix">
             <div class="info_con clearfix">
 				<h3 class="common_title2">头像</h3>
-                <img src="http://192.168.80.132:8888/{{ user.image }}" alt="" style="height: 300px;width: 200px">
-{#                <form action="" method="post" enctype="multipart/form-data">#}
-{#                            <p><input type="file" name="upload" value="选择图片"></p>#}
-{#                            <p><input type="submit" value="submit"></p>#}
-{#                </form>#}
+                {% if user.image != "1" %}
+
+                    <img src="http://192.168.80.132:8888/{{ user.image }}" alt="" style="height: 300px;width: 200px">
+                {% endif %}
+
+                <form action="{% url "user:change_image" %}" method="post" enctype="multipart/form-data">
+                            <p><input type="file" name="upload" value="选择图片"></p>
+                            <p><input type="submit" value="submit"></p>
+                    {% csrf_token %}
+                </form>
             </div>
 				<div class="info_con clearfix">
 				<h3 class="common_title2">基本信息</h3>

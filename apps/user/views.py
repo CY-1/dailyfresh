@@ -7,20 +7,22 @@ from django.core.paginator import Paginator
 from goods.models import GoodsSKU
 from django.http import HttpResponse
 from user.models import User, Address
-from django.conf import  settings
+from django.conf import settings
 from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
-from celery_tasks.tasks import  send_register_active_email
+from celery_tasks.tasks import send_register_active_email
 from utils.mixin import LoginRequireMixin
 from django_redis import get_redis_connection
 from order.models import OrderInfo, OrderGoods
 from django.core.mail import send_mail
+
+
 # Create your views here.
 
 # /user/register
 def register(request):
     '''显示注册页面'''
-    if request.method=="GET":
+    if request.method == "GET":
         return render(request, "register.html")
     else:
         '''注册处理'''
@@ -53,10 +55,11 @@ def register(request):
 
 class RegisterView(View):
     '''注册'''
-    def get(self,request):
+
+    def get(self, request):
         return render(request, 'register.html')
 
-    def post(self,request):
+    def post(self, request):
         '''注册处理'''
         # 接收数据
         user_name = request.POST.get('user_name')
@@ -118,8 +121,8 @@ class LoginView(View):
     '''登录'''
 
     def get(self, request):
-        if request.user.is_authenticated:# 防止用户重复登录
-             return redirect(reverse('goods:index'))
+        if request.user.is_authenticated:  # 防止用户重复登录
+            return redirect(reverse('goods:index'))
         if 'username' in request.COOKIES:
             username = request.COOKIES.get("username")
             checked = "checked"
@@ -135,7 +138,7 @@ class LoginView(View):
         password = request.POST.get("pwd")
         # 效验数据
         if not all([username, password]):
-            return render(request, 'login.html', {"errmsg":"不完整"})
+            return render(request, 'login.html', {"errmsg": "不完整"})
         # 业务处理 用的是自带的认证系统
         user = authenticate(username=username, password=password)
 
@@ -149,9 +152,9 @@ class LoginView(View):
                 response = redirect(next_url)
                 # 判断是否记住用户名
                 remember = request.POST.get("remember")
-                if remember=="on":
+                if remember == "on":
                     # 是否记住用户名
-                    response.set_cookie("username", username, max_age=7*24*3600)
+                    response.set_cookie("username", username, max_age=7 * 24 * 3600)
                 else:
                     response.delete_cookie("username")
                 # 跳转到首页
@@ -165,6 +168,7 @@ class LoginView(View):
 # /user/logout
 class LogoutView(View):
     '''退出登录'''
+
     def get(self, request):
         '''退出登录'''
         # 使用的内置认证系统 也要使用内置的退出
@@ -185,7 +189,7 @@ class UserInfoView(LoginRequireMixin, View):
         # from redis import StrictRedis
         # sr = StrictRedis(host="192.168.80.132", port=6379, db=9)
         con = get_redis_connection("default")
-        history_key = "history_%d"% user.id
+        history_key = "history_%d" % user.id
         # 获取用户最新游览的5个商品的id
         sku_ids = con.lrange(history_key, 0, 4)
         # 从数据库中查询用户游览商品的具体信息
@@ -197,7 +201,7 @@ class UserInfoView(LoginRequireMixin, View):
         context = {"page": "user",
                    "address": address,
                    "goods_li": goods_li}
-        return render(request, 'user_center_info.html',context )
+        return render(request, 'user_center_info.html', context)
 
 
 # /user/order
@@ -219,7 +223,7 @@ class UserOrderView(LoginRequireMixin, View):
             # 遍历order_skus计算商品小计
             for order_sku in order_skus:
                 # 计算小计
-                amount = order_sku.count*order_sku.price
+                amount = order_sku.count * order_sku.price
                 # 动态给order_sku增加属性 保存订单商品小计
                 order_sku.amount = amount
             # 保存订单状态标题
@@ -242,13 +246,13 @@ class UserOrderView(LoginRequireMixin, View):
         # 4 其他情况 显示当前页,当前页的前两页和后两页
         num_pages = paginator.num_pages
         if num_pages < 5:
-            pages = range(1, num_pages+1)
+            pages = range(1, num_pages + 1)
         elif page <= 3:
             pages = range(1, 6)
-        elif num_pages-page <= 2:
-            pages = range(num_pages-4, num_pages+1)
+        elif num_pages - page <= 2:
+            pages = range(num_pages - 4, num_pages + 1)
         else:
-            pages = range(page-2, page+3)
+            pages = range(page - 2, page + 3)
         # 组织上下文
         if len(orders) == 0:
             pages = None
@@ -263,12 +267,15 @@ class UserOrderView(LoginRequireMixin, View):
 # /user/address
 class UserAddressView(LoginRequireMixin, View):
     '''用户中心 地址'''
+
     def get(self, request):
         # 获取用户的默认地址信息
         user = request.user
         default_address = Address.objects.get_default_address(user)
         address = Address.objects.filter(user=user, is_default=0)
-        return render(request, 'user_center_site.html', {"page": "address", "default_address": default_address, "address": address})
+        return render(request, 'user_center_site.html',
+                      {"page": "address", "default_address": default_address, "address": address})
+
     def post(self, request):
         """地址的添加"""
         # 接受数据
@@ -325,3 +332,19 @@ class UserChangeAddress(LoginRequireMixin, View):
             new_default_address.delete()
         return JsonResponse({"res": 3})
 
+
+# 修改头像
+class UserImage(LoginRequireMixin, View):
+    def post(self, request):
+        """修改头像"""
+
+        user = User.objects.get(id=request.user.id)
+        image = request.FILES.get('upload')
+        print(image)
+        if image is None:
+            return JsonResponse({"code": 2})
+        else:
+            user.image = image
+            user.save()
+            print(1)
+        return JsonResponse({"code": 1})

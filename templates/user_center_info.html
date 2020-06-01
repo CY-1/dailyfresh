@@ -1,4 +1,5 @@
 {% extends 'base_user_center.html' %}
+{% load static %}
 {% block right_content %}
 
 		<div class="right_content clearfix">
@@ -9,11 +10,12 @@
                     <img src="http://192.168.80.132:8888/{{ user.image }}" alt="" style="height: 300px;width: 200px">
                 {% endif %}
 
-                <form action="{% url "user:change_image" %}" method="post" enctype="multipart/form-data">
+                <form action="{% url "user:change_image" %}" target="frame1" method="post" enctype="multipart/form-data">
                             <p><input type="file" name="upload" value="选择图片"></p>
-                            <p><input type="submit" value="submit"></p>
+                            <p><input type="submit" value="submit" id="change" onclick="shuaxing(1)"></p>
                     {% csrf_token %}
                 </form>
+            <iframe name="frame1" frameborder="0" height="0"></iframe>
             </div>
 				<div class="info_con clearfix">
 				<h3 class="common_title2">基本信息</h3>
@@ -49,4 +51,12 @@
 		</div>
 		</div>
 	</div>
+{% endblock %}
+{% block bottomfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+    function shuaxing(res) {
+        location.reload()
+    }
+    </script>
 {% endblock %}

@@ -339,12 +339,11 @@ class UserImage(LoginRequireMixin, View):
         """修改头像"""
 
         user = User.objects.get(id=request.user.id)
-        image = request.FILES.get('upload')
-        print(image)
+        image = request.FILES.get('file')
         if image is None:
             return JsonResponse({"code": 2})
         else:
             user.image = image
             user.save()
-            print(1)
+
         return JsonResponse({"code": 1})

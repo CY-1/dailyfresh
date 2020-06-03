@@ -457,13 +457,11 @@ class OrderDelete(LoginRequireMixin, View):
 
     def post(self, request):
         id = request.POST.get("order_id")
-        print(id)
         a = OrderGoods.objects.filter(order_id=id)
         for i in a:
             i.is_delete = 1
             i.save()
         a = OrderInfo.objects.filter(order_id=id)
-        print(a)
         for i in a:
             i.is_delete = 1
             i.save()

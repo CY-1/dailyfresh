@@ -6,16 +6,16 @@
             <div class="info_con clearfix">
 				<h3 class="common_title2">头像</h3>
                 {% if user.image != "1" %}
-
                     <img src="http://192.168.80.132:8888/{{ user.image }}" alt="" style="height: 300px;width: 200px">
                 {% endif %}
 
-                <form action="{% url "user:change_image" %}" target="frame1" method="post" enctype="multipart/form-data">
-                            <p><input type="file" name="upload" value="选择图片"></p>
-                            <p><input type="submit" value="submit" id="change" onclick="shuaxing(1)"></p>
+
+
+       <form id="uploadForm" enctype="multipart/form-data">
+           <input id="file" type="file" name="file"/>
+       </form>
+                            <p><input type="submit" value="submit" id="change"></p>
                     {% csrf_token %}
-                </form>
-            <iframe name="frame1" frameborder="0" height="0"></iframe>
             </div>
 				<div class="info_con clearfix">
 				<h3 class="common_title2">基本信息</h3>
@@ -54,9 +54,24 @@
 {% endblock %}
 {% block bottomfiles %}
     <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
-    <script>
-    function shuaxing(res) {
-        location.reload()
-    }
-    </script>
+<script type="text/javascript">
+
+               $("#change").click(function () {
+                   var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+               var formData = new FormData($('#uploadForm')[0]);
+                formData.append("csrfmiddlewaretoken", csrf);
+                $.ajax({
+                type: 'post',
+                url: "{% url "user:change_image" %}", //上传文件的请求路径必须是绝对路劲
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+            }).success(function (data) {
+                location.reload();
+           }).error(function () {
+                alert("上传失败");
+       });
+    });
+</script>
 {% endblock %}

@@ -57,7 +57,7 @@
     <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
     <script>
     $("#delete_order").click(function () {
-            if(confirm("是否打开")){
+            if(confirm("是否删除")){
                 order_id = $(this).attr("order_id");
                 csrf = $('input[name="csrfmiddlewaretoken"]').val()
                 params={
@@ -127,4 +127,9 @@
         }
     })
     </script>
+    <style type="text/css">
+    .stress:hover{
+        cursor:pointer
+    }
+    </style>
 {% endblock %}

@@ -9,9 +9,9 @@
 
 {% csrf_token %}
 	<div class="breadcrumb">
-		<a href="javascript:;">全部分类</a>
+		<a href="/">全部分类</a>
 		<span>></span>
-		<a href="javascript:;">{{ type.name }}</a>
+		<a href="/list/{{ type.id }}/1">{{ type.name }}</a>
 	</div>
 
 	<div class="main_wrap clearfix">

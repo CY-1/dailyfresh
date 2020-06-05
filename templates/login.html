@@ -18,15 +18,14 @@
 					<h1>用户登录</h1>
 					<a href="{% url "user:register" %}">立即注册</a>
 				</div>
+                <div style="padding-left: 31px;font-size: 15px;color: red">{{ errmsg }}</div>
 				<div class="form_input">
 {#                    不设置表单的action 会像游览器所在的地址发起请求#}
 
 					<form method="post">
                         {% csrf_token %}
 						<input type="text" name="username" class="name_input" placeholder="请输入用户名" value="{{ username }}">
-						<div class="user_error">输入错误</div>
 						<input type="password" name="pwd" class="pass_input" placeholder="请输入密码">
-						<div class="pwd_error">输入错误</div>
 
 						<div class="more_input clearfix">
 							<input type="checkbox" name="remember" {{ checked }}>
@@ -39,6 +38,6 @@
 			</div>
 		</div>
 	</div>
-{{ errmsg }}
+
 
 {% endblock body %}

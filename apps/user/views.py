@@ -347,3 +347,10 @@ class UserImage(LoginRequireMixin, View):
             user.save()
 
         return JsonResponse({"code": 1})
+
+
+# 修改密码
+class ChangePassword(LoginRequireMixin, View):
+    """修改密码"""
+    def get(self, request):
+        return render(request, 'changepassword.html')

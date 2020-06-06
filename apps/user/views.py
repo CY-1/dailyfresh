@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import re
+import random
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from goods.models import GoodsSKU
@@ -10,7 +11,7 @@ from user.models import User, Address
 from django.conf import settings
 from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
-from celery_tasks.tasks import send_register_active_email
+from celery_tasks.tasks import send_register_active_email, send_verify_code
 from utils.mixin import LoginRequireMixin
 from django_redis import get_redis_connection
 from order.models import OrderInfo, OrderGoods
@@ -350,7 +351,22 @@ class UserImage(LoginRequireMixin, View):
 
 
 # 修改密码
-class ChangePassword(LoginRequireMixin, View):
+class ChangePassword(View):
     """修改密码"""
     def get(self, request):
         return render(request, 'changepassword.html')
+
+
+# 修改密码发送验证信息
+class SendCode(View):
+    """验证信息"""
+    def post(self, request):
+        """发送验证邮件"""
+        user_id = request.POST.get("user_id")
+        user = User.objects.get(id=user_id)
+        email = user.email
+        user_name = user.username
+        token = "".join(random.sample("qwertyuipoadfgjfkxsrfh12345",24))
+        # 发送邮件
+        send_verify_code(email, user_name, token.encode())
+        return JsonResponse(code=1)

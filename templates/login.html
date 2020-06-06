@@ -30,7 +30,7 @@
 						<div class="more_input clearfix">
 							<input type="checkbox" name="remember" {{ checked }}>
 							<label>记住用户名</label>
-							<a href="#">忘记密码</a>
+							<a href="{% url "user:ChangePassword" %}">忘记密码</a>
 						</div>
 						<input type="submit" name="" value="登录" class="input_submit">
 					</form>

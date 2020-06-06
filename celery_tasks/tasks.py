@@ -27,3 +27,16 @@ def send_register_active_email(to_email, username, token):
     send_mail(subject, message=message, from_email=sender, recipient_list=receiver, html_message=html_message)
 
 
+# 定义任务函数
+@app.task
+def send_verify_code(to_email, username, token):
+    '''发送激活邮件'''
+    # 组织邮件信息
+    subject = '天天生鲜验证信息'
+    message = ""
+    sender = settings.EMAIL_FROM
+    receiver = [to_email]
+    html_message = r'%s' % token
+    send_mail(subject, message=message, from_email=sender, recipient_list=receiver, html_message=html_message)
+
+

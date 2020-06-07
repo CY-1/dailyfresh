@@ -362,11 +362,13 @@ class SendCode(View):
     """验证信息"""
     def post(self, request):
         """发送验证邮件"""
-        user_id = request.POST.get("user_id")
-        user = User.objects.get(id=user_id)
+        user_name = request.POST.get("user_name")
+        user = User.objects.get(username=user_name)
         email = user.email
         user_name = user.username
-        token = "".join(random.sample("qwertyuipoadfgjfkxsrfh12345",24))
+        token = "".join(random.sample("qwertyuipoadfgjfkxsrfh12345", 4))
         # 发送邮件
-        send_verify_code(email, user_name, token.encode())
-        return JsonResponse(code=1)
+        send_verify_code(email, user_name, token)
+        con = get_redis_connection("default")
+        con.set(user_name, token)
+        return JsonResponse({"code": 1})

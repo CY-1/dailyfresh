@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import path,include,re_path
 from user.views import RegisterView, ActiveView, LoginView, UserOrderView, UserInfoView, UserAddressView, \
-   LogoutView,UserChangeAddress, UserImage,ChangePassword
+   LogoutView,UserChangeAddress, UserImage,ChangePassword, SendCode
 from django.conf.urls import  url
 from django.contrib.auth.decorators import login_required
 
@@ -19,5 +19,6 @@ urlpatterns = [
    url(r'^change_address/$', UserChangeAddress.as_view(), name='change_address'),# 修改地址
    url(r'^change_image/$', UserImage.as_view(), name='change_image'),# 修改头像
    url(r'^change_password/$', ChangePassword.as_view(), name='ChangePassword'),# 修改密码
+   url(r'^send_code/$', SendCode.as_view(), name='SendCode'),# 修改密码
 
 ]

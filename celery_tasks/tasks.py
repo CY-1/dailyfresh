@@ -36,7 +36,7 @@ def send_verify_code(to_email, username, token):
     message = ""
     sender = settings.EMAIL_FROM
     receiver = [to_email]
-    html_message = r'%s' % token
+    html_message = r'code is %s' % token
     send_mail(subject, message=message, from_email=sender, recipient_list=receiver, html_message=html_message)
 
 

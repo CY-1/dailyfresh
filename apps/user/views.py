@@ -356,6 +356,22 @@ class ChangePassword(View):
     def get(self, request):
         return render(request, 'changepassword.html')
 
+    def post(self, request):
+        con = get_redis_connection("default")
+        user_name = request.POST.get("user_name")
+        code = request.POST.get("code")
+        user = User.objects.get(username=user_name)
+        password = request.POST.get("password")
+        redis_code = con.get(user_name).decode()
+        if code == redis_code:
+            user.set_password(password)
+            user.save()
+            return JsonResponse({"code": 1})
+
+        else:
+            return JsonResponse({"code": 2})
+
+
 
 # 修改密码发送验证信息
 class SendCode(View):
@@ -372,3 +388,5 @@ class SendCode(View):
         con = get_redis_connection("default")
         con.set(user_name, token)
         return JsonResponse({"code": 1})
+
+

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 import re
+from django.http import StreamingHttpResponse
 import random
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -15,6 +16,7 @@ from celery_tasks.tasks import send_register_active_email, send_verify_code
 from utils.mixin import LoginRequireMixin
 from django_redis import get_redis_connection
 from order.models import OrderInfo, OrderGoods
+from utils.image_code.code import verify_code
 from django.core.mail import send_mail
 
 
@@ -363,6 +365,7 @@ class ChangePassword(View):
         user = User.objects.get(username=user_name)
         password = request.POST.get("password")
         redis_code = con.get(user_name).decode()
+        con.delete(user_name)
         if code == redis_code:
             user.set_password(password)
             user.save()
@@ -370,7 +373,6 @@ class ChangePassword(View):
 
         else:
             return JsonResponse({"code": 2})
-
 
 
 # 修改密码发送验证信息
@@ -388,5 +390,15 @@ class SendCode(View):
         con = get_redis_connection("default")
         con.set(user_name, token)
         return JsonResponse({"code": 1})
+
+
+# 图片验证码
+class ImageCode(View):
+    """验证信息"""
+    def get(self, request):
+        """发送验证邮件"""
+        # 生成验证码图片 名字 真实文本 图片数据
+        name, text, image_data = verify_code()
+        return HttpResponse(image_data, content_type='image/jpg')
 
 

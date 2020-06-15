@@ -362,11 +362,18 @@ class ChangePassword(View):
         con = get_redis_connection("default")
         user_name = request.POST.get("user_name")
         code = request.POST.get("code")
+        # 上传来的验证码
+        img_code = request.POST.get("img_code")
         user = User.objects.get(username=user_name)
         password = request.POST.get("password")
         redis_code = con.get(user_name).decode()
+        csrf_token = request.COOKIES.get("csrftoken")
+        # 数据库保存的验证码
+        send_img_code = con.get("password_%s" % csrf_token)
+        con.delete("password_%s" % csrf_token)
         con.delete(user_name)
-        if code == redis_code:
+        print(send_img_code, "   ",img_code)
+        if code == redis_code and send_img_code.decode().lower() == img_code:
             user.set_password(password)
             user.save()
             return JsonResponse({"code": 1})
@@ -399,6 +406,9 @@ class ImageCode(View):
         """发送验证邮件"""
         # 生成验证码图片 名字 真实文本 图片数据
         name, text, image_data = verify_code()
+        con = get_redis_connection()
+        csrf_token = request.COOKIES.get("csrftoken")
+        con.set("password_%s" % csrf_token, text, 300)
         return HttpResponse(image_data, content_type='image/jpg')
 
 
